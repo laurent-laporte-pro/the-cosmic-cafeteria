@@ -1,0 +1,20 @@
+site_name: Test Technique Backend
+
+theme:
+  name: material
+
+nav:
+  - index.md
+  - 01-intro.md
+  - 02-specs.md
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search
+  - mermaid2

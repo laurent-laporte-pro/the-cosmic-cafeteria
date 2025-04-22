@@ -1,0 +1,99 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "the-cosmic-cafeteria"
+dynamic = ["version"]
+description = 'A fun microservice-based web app where hungry heroes order interstellar meals, powered by Flask, PostgreSQL, Redis queues, and Docker. Includes allergy checks, logs, tests, and cosmic flavor.'
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+keywords = []
+authors = [
+    { name = "Laurent LAPORTE", email = "laurent.laporte.pro@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+
+dependencies = [
+    "click",
+    "flask>=3.1.0",
+    "flask-restful>=0.3.10",
+    "flask-sqlalchemy>=3.1.1",
+    "psycopg2-binary>=2.9.10",
+    "python-dotenv>=1.1.0",
+    "redis>=5.2.1",
+    "rq>=2.3.2",
+]
+
+[project.urls]
+Documentation = "https://github.com/laurent-laporte-pro/the-cosmic-cafeteria#readme"
+Issues = "https://github.com/laurent-laporte-pro/the-cosmic-cafeteria/issues"
+Source = "https://github.com/laurent-laporte-pro/the-cosmic-cafeteria"
+
+[project.scripts]
+# The Cosmic Cafeteria CLI
+tcc = "cli.app:main_cmd"
+
+[tool.hatch.version]
+path = "src/cli/__about__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/api", "src/cli", "src/worker"]
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+    "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src tests}"
+
+[tool.coverage.run]
+source_pkgs = ["api", "cli", "worker", "tests"]
+branch = true
+parallel = true
+omit = [
+    "src/cli/__about__.py",
+]
+
+[tool.coverage.paths]
+api = [
+    "src/api",
+    "*/the-cosmic-cafeteria/src/api",
+]
+cli = [
+    "src/cli",
+    "*/the-cosmic-cafeteria/src/cli",
+]
+worker = [
+    "src/worker",
+    "*/the-cosmic-cafeteria/src/worker",
+]
+tests = [
+    "tests",
+    "*/the-cosmic-cafeteria/tests",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "no cov",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[dependency-groups]
+docs = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.6.12",
+    "mkdocs-mermaid2-plugin>=1.2.1",
+]
