@@ -1,5 +1,5 @@
 """
-This module contains the models for the Cosmic Cafeteria application.
+This module contains the database models for the Cosmic Cafeteria application.
 
-Entities can be implemented using classic classes, pydantic models, or dataclasses.
+The model is based on SQLAlchemy.
 """

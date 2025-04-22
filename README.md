@@ -51,6 +51,7 @@ pip install -e .
 
 ```
 the-cosmic-cafeteria/
+├── docker/                 # Docker configuration files
 ├── docs/                   # Documentation files
 ├── src/                    # Source code
 │   ├── api/                # Flask API components
@@ -64,7 +65,6 @@ the-cosmic-cafeteria/
 │       ├── __init__.py
 │       └── tasks.py        # Async task definitions
 ├── tests/                  # Pytest test suites
-├── docker/                 # Docker configuration files
 └── docker-compose.yml      # Service orchestration
 ```
 

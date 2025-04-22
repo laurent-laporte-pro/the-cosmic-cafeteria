@@ -1,0 +1,37 @@
+services:
+  tcc-api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - tcc-db
+      - tcc-redis
+
+  tcc-worker:
+    build:
+      context: .
+      dockerfile: docker/worker/Dockerfile
+    environment:
+      - REDIS_URL=redis://tcc-redis:6379/0
+      - DATABASE_URL=postgresql://user:password@tcc-db:5432/cosmic_cafeteria
+    depends_on:
+      - tcc-db
+      - tcc-redis
+
+  tcc-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cosmic_cafeteria
+    ports:
+      - "5432:5432"
+
+  tcc-redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
