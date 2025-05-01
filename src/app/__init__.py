@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
@@ -5,7 +7,8 @@ from flask_restful import Api
 db = SQLAlchemy()
 
 def create_app():
-    app = Flask(__name__)
+    template_dir = os.path.join(os.path.dirname(__file__), '../api/templates')
+    app = Flask(__name__,template_folder=template_dir)
     app.config.from_object("app.config.Config")
 
     db.init_app(app)
@@ -21,5 +24,9 @@ def create_app():
     from api.models.user import User
 
     api.add_resource(UserResource, "/users")
+
+    # Register Jinja2 web routes
+    from api.routes.user_pages import user_pages
+    app.register_blueprint(user_pages)
 
     return app
