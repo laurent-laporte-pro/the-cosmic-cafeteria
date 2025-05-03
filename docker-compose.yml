@@ -3,10 +3,14 @@ services:
     build:
       context: .
       dockerfile: docker/api/Dockerfile
+    command:  sh -c "flask create-db && flask run --host=0.0.0.0"
     ports:
       - "5000:5000"
     environment:
       - FLASK_ENV=development
+      - FLASK_APP=src/cli/__main__.py
+      - REDIS_URL=redis://tcc-redis:6379/0
+      - DATABASE_URL=postgresql://user:password@tcc-db:5432/cosmic_cafeteria
     depends_on:
       - tcc-db
       - tcc-redis
@@ -15,6 +19,7 @@ services:
     build:
       context: .
       dockerfile: docker/worker/Dockerfile
+    command:  sh -c "python3 src/app/worker.py"
     environment:
       - REDIS_URL=redis://tcc-redis:6379/0
       - DATABASE_URL=postgresql://user:password@tcc-db:5432/cosmic_cafeteria
@@ -29,7 +34,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: cosmic_cafeteria
     ports:
-      - "5432:5432"
+      - "5832:5432"
 
   tcc-redis:
     image: redis:7
