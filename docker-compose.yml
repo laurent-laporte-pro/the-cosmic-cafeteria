@@ -9,13 +9,17 @@ services:
     environment:
       - FLASK_ENV=development
       - FLASK_APP=src/cli/__main__.py
+      - REDIS_URL=redis://tcc-redis:6379/0
+      - DATABASE_URL=postgresql://user:password@tcc-db:5432/cosmic_cafeteria
     depends_on:
       - tcc-db
+      - tcc-redis
 
   tcc-worker:
     build:
       context: .
       dockerfile: docker/worker/Dockerfile
+    command:  sh -c "python3 src/app/worker.py"
     environment:
       - REDIS_URL=redis://tcc-redis:6379/0
       - DATABASE_URL=postgresql://user:password@tcc-db:5432/cosmic_cafeteria

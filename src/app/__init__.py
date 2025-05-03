@@ -21,9 +21,10 @@ def create_app():
 
     # Register routes
     from api.routes.user_routes import UserResource
-    from api.models.user import User
+    from api.routes.create_order import OrderResource
 
     api.add_resource(UserResource, "/users")
+    api.add_resource(OrderResource, "/order")
 
     # Register Jinja2 web routes
     from api.routes.user_pages import user_pages

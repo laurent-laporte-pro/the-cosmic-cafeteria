@@ -103,3 +103,4 @@ curl -X POST http://127.0.0.1:5000/users      -H "Content-Type: application/json
 
 - Database is SQLite (`db.sqlite3`) by default.
 - You can add more models, routes, and CLI commands as needed.
+
