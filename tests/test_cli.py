@@ -1,4 +1,4 @@
-from cli.app import __version__
+from src.cli.__about__ import __version__
 
 
 def test_version() -> None:

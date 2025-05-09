@@ -12,7 +12,7 @@ Available commandes are:
 """
 import click
 
-from cli.__about__ import __version__
+from src.cli.__about__ import __version__
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]}, invoke_without_command=True)

@@ -4,9 +4,11 @@ services:
       context: .
       dockerfile: docker/api/Dockerfile
     ports:
-      - "5000:5000"
+      - "5001:5000"
     environment:
       - FLASK_ENV=development
+      - DATABASE_URL=postgresql://user:password@tcc-db:5432/cosmic_cafeteria
+      - REDIS_URL=redis://tcc-redis:6379/0
     depends_on:
       - tcc-db
       - tcc-redis

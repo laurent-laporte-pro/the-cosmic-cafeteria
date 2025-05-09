@@ -1,0 +1,154 @@
+"""
+Unit tests for worker tasks in the Cosmic Cafeteria.
+"""
+import unittest
+from unittest.mock import patch, MagicMock
+from datetime import datetime
+
+from src.worker.tasks import process_order
+
+
+class TestProcessOrder(unittest.TestCase):
+    """Test the process_order task."""
+    
+    @patch('src.worker.tasks.time')
+    @patch('src.worker.tasks.Order')
+    @patch('src.worker.tasks.Hero')
+    @patch('src.worker.tasks.Meal')
+    @patch('src.worker.tasks.db')
+    @patch('src.worker.tasks.__import__')  # Mock the dynamic import
+    def test_process_order_success(self, mock_import, mock_db, mock_meal_model, 
+                                  mock_hero_model, mock_order_model, mock_time):
+        """Test processing an order that completes successfully."""
+        # Setup application context mock
+        mock_app = MagicMock()
+        mock_create_app = MagicMock(return_value=mock_app)
+        
+        # Make __import__ return a module with create_app
+        mock_api_module = MagicMock()
+        mock_api_module.create_app = mock_create_app
+        mock_import.return_value = mock_api_module
+        
+        # Setup mock order
+        mock_order = MagicMock()
+        mock_order.id = 1
+        mock_order.hero_id = 101
+        mock_order.meal_id = 201
+        mock_order_model.query.get.return_value = mock_order
+        
+        # Setup mock hero with allergies
+        mock_hero = MagicMock()
+        mock_hero.allergies = [
+            MagicMock(name='peanuts'),
+            MagicMock(name='dairy')
+        ]
+        mock_hero_model.query.get.return_value = mock_hero
+        
+        # Setup mock meal with ingredients that don't conflict with allergies
+        mock_meal = MagicMock()
+        mock_meal.ingredients = [
+            MagicMock(name='wheat'),
+            MagicMock(name='tomato')
+        ]
+        mock_meal_model.query.get.return_value = mock_meal
+        
+        # Call the task
+        result = process_order(1)
+        
+        # Assertions
+        self.assertIsNotNone(result)
+        self.assertEqual(result['order_id'], 1)
+        self.assertEqual(result['status'], 'completed')
+        
+        # Verify correct state changes
+        self.assertEqual(mock_order.status, 'COMPLETED')
+        self.assertIsNotNone(mock_order.completed_time)
+        mock_db.session.commit.assert_called()
+        mock_time.sleep.assert_called_once_with(5)
+    
+    @patch('src.worker.tasks.time')
+    @patch('src.worker.tasks.Order')
+    @patch('src.worker.tasks.Hero')
+    @patch('src.worker.tasks.Meal')
+    @patch('src.worker.tasks.db')
+    @patch('src.worker.tasks.__import__')  # Mock the dynamic import
+    def test_process_order_with_allergies(self, mock_import, mock_db, mock_meal_model, 
+                                         mock_hero_model, mock_order_model, mock_time):
+        """Test processing an order that fails due to allergies."""
+        # Setup application context mock
+        mock_app = MagicMock()
+        mock_create_app = MagicMock(return_value=mock_app)
+        
+        # Make __import__ return a module with create_app
+        mock_api_module = MagicMock()
+        mock_api_module.create_app = mock_create_app
+        mock_import.return_value = mock_api_module
+        
+        # Setup mock order
+        mock_order = MagicMock()
+        mock_order.id = 1
+        mock_order.hero_id = 101
+        mock_order.meal_id = 201
+        mock_order_model.query.get.return_value = mock_order
+        
+        # Setup mock hero with allergies
+        mock_hero = MagicMock()
+        mock_allergy1 = MagicMock()
+        mock_allergy1.name = 'PEANUTS'  # Using uppercase to test case insensitivity
+        mock_allergy2 = MagicMock()
+        mock_allergy2.name = 'dairy'
+        mock_hero.allergies = [mock_allergy1, mock_allergy2]
+        mock_hero_model.query.get.return_value = mock_hero
+        
+        # Setup mock meal with ingredients that include allergens
+        mock_meal = MagicMock()
+        mock_ingredient1 = MagicMock()
+        mock_ingredient1.name = 'wheat'
+        mock_ingredient2 = MagicMock()
+        mock_ingredient2.name = 'peanuts'  # This will trigger the allergy
+        mock_meal.ingredients = [mock_ingredient1, mock_ingredient2]
+        mock_meal_model.query.get.return_value = mock_meal
+        
+        # Call the task
+        result = process_order(1)
+        
+        # Assertions
+        self.assertIsNotNone(result)
+        self.assertEqual(result['order_id'], 1)
+        self.assertEqual(result['status'], 'cancelled')
+        self.assertIn('reason', result)
+        self.assertIn('peanuts', result['reason'])
+        
+        # Verify correct state changes
+        self.assertEqual(mock_order.status, 'CANCELLED')
+        self.assertIsNotNone(mock_order.completed_time)
+        self.assertIn('allergies', mock_order.message)
+        mock_db.session.commit.assert_called()
+    
+    @patch('src.worker.tasks.Order')
+    @patch('src.worker.tasks.logger')
+    @patch('src.worker.tasks.__import__')  # Mock the dynamic import
+    def test_process_order_not_found(self, mock_import, mock_logger, mock_order_model):
+        """Test processing a non-existent order."""
+        # Setup application context mock
+        mock_app = MagicMock()
+        mock_create_app = MagicMock(return_value=mock_app)
+        
+        # Make __import__ return a module with create_app
+        mock_api_module = MagicMock()
+        mock_api_module.create_app = mock_create_app
+        mock_import.return_value = mock_api_module
+        
+        # Setup mock order to return None (not found)
+        mock_order_model.query.get.return_value = None
+        
+        # Call the task
+        result = process_order(999)
+        
+        # Assertions
+        self.assertIsNone(result)
+        mock_logger.error.assert_called_once()
+
+
+if __name__ == '__main__':
+    unittest.main()
