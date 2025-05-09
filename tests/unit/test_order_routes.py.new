@@ -1,0 +1,66 @@
+"""
+Unit tests for order route handlers in the Cosmic Cafeteria API.
+"""
+import unittest
+from datetime import datetime
+from unittest.mock import patch, MagicMock
+
+from src.api.routes.order_routes import OrderResource
+
+
+class TestOrderResource(unittest.TestCase):
+    """Unit tests for the OrderResource class."""
+    
+    @patch('src.api.routes.order_routes.Order')
+    def test_get_order(self, mock_order_model):
+        """Test getting an order by ID."""
+        # Setup mock
+        mock_order = MagicMock()
+        mock_order.id = 1
+        mock_order.hero_id = 101
+        mock_order.meal_id = 201
+        mock_order.quantity = 2
+        mock_order.created_at = datetime(2023, 5, 15, 12, 30, 0)
+        mock_order.status = "PENDING"
+        
+        mock_order_model.query.get_or_404.return_value = mock_order
+        
+        # Create resource and call get
+        resource = OrderResource()
+        result = resource.get(1)
+        
+        # Assertions
+        mock_order_model.query.get_or_404.assert_called_once_with(1)
+    
+    @patch('src.api.routes.order_routes.Order')
+    @patch('src.api.routes.order_routes.db')
+    def test_patch_order_status(self, mock_db, mock_order_model):
+        """Test updating an order status."""
+        # Setup mocks for request parsing
+        with patch('src.api.routes.order_routes.reqparse.RequestParser') as mock_parser_class:
+            mock_parser = MagicMock()
+            mock_parser_class.return_value = mock_parser
+            
+            # Set parser to return status update
+            mock_args = {'status': 'COMPLETED'}
+            mock_parser.parse_args.return_value = mock_args
+            
+            # Setup mock for existing order
+            mock_order = MagicMock()
+            mock_order.id = 1
+            mock_order.status = "PENDING"
+            
+            mock_order_model.query.get_or_404.return_value = mock_order
+            
+            # Create resource and call patch
+            resource = OrderResource()
+            result = resource.patch(1)
+            
+            # Assertions
+            self.assertEqual(mock_order.status, mock_args['status'])
+            mock_order_model.query.get_or_404.assert_called_once_with(1)
+            mock_db.session.commit.assert_called_once()
+
+
+if __name__ == '__main__':
+    unittest.main()
