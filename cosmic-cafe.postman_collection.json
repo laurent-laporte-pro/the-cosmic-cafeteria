@@ -1,0 +1,329 @@
+{
+	"info": {
+		"_postman_id": "db5fc1dd-55c4-4c4a-9a2c-b929dad9e808",
+		"name": "cosmic-cafe",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "25803247"
+	},
+	"item": [
+		{
+			"name": "create hero",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"first hero\",\n    \"planet\":\"earth\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5001/heroes"
+			},
+			"response": []
+		},
+		{
+			"name": "get meals",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5001/meals"
+			},
+			"response": []
+		},
+		{
+			"name": "update hero",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"first hero updated\",\n    \"planet\":\"earth updated\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/heroes/1"
+			},
+			"response": []
+		},
+		{
+			"name": "delete hero",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"first hero updated\",\n    \"planet\":\"earth updated\"\n}"
+				},
+				"url": "http://127.0.0.1:5000/heroes/1"
+			},
+			"response": []
+		},
+		{
+			"name": "get hero allergies",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5000/heroes/4/allergies"
+			},
+			"response": []
+		},
+		{
+			"name": "add allergies to hero",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"allergies\":[\"ca\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5001/heroes/1/allergies"
+			},
+			"response": []
+		},
+		{
+			"name": "delete hero allergy",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"allergies\":[\"ab\",\"ac\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5001/heroes/1/allergies"
+			},
+			"response": []
+		},
+		{
+			"name": "get heros",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5001/heroes"
+			},
+			"response": []
+		},
+		{
+			"name": "create meal",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"first meal\",\n    \"price\":100,\n    \"origin_planet\":\"earth\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5001/meals"
+			},
+			"response": []
+		},
+		{
+			"name": "delete meal",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/meals/2"
+			},
+			"response": []
+		},
+		{
+			"name": "add ingredient",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ingredients\":[\"ab\",\"ac\",\"bc\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5001/meals/1/ingredients"
+			},
+			"response": []
+		},
+		{
+			"name": "update meal",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"first meal\",\n    \"price\":100,\n    \"origin_planet\":\"earth\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/meals/1/ingredients"
+			},
+			"response": []
+		},
+		{
+			"name": "delete ingredient",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ingredients\":[\"ab\"]\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/meals/1/ingredients"
+			},
+			"response": []
+		},
+		{
+			"name": "get order by id",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": "http://127.0.0.1:5001/orders/2"
+			},
+			"response": []
+		},
+		{
+			"name": "create order",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hero_id\":1,\n    \"meal_id\":1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5001/orders"
+			},
+			"response": []
+		},
+		{
+			"name": "delete order",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \"message\":\"i want to delete order because\"   \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/orders/12"
+			},
+			"response": []
+		},
+		{
+			"name": "get meal ingredient",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://127.0.0.1:5000/meals/3/ingredients"
+			},
+			"response": []
+		}
+	]
+}
