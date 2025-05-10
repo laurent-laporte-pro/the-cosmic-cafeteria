@@ -14,9 +14,10 @@ def create_app():
     
     # Import and register blueprints within app context
     with app.app_context():
-        from api.routes import hero_blueprint,meal_blueprint  # Adjust import path
+        from api.routes import hero_blueprint,meal_blueprint,order_blueprint  # Adjust import path
         app.register_blueprint(hero_blueprint)
         app.register_blueprint(meal_blueprint)
+        app.register_blueprint(order_blueprint)
         
         # Import models to ensure they're registered with SQLAlchemy
         from api import models  # This ensures models are loaded
