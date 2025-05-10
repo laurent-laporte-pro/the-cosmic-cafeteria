@@ -1,12 +1,13 @@
-from api.extensions import ma
-from api.models.Order import Order
-from api.models.order_status import OrderStatus
+# schemas/order_schema.py
 from marshmallow import fields, validate
-from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from marshmallow_enum import EnumField  # pip install marshmallow-enum
+from api.extensions import ma
+from api.models import Order, OrderStatus
 
 class OrderSchema(ma.SQLAlchemyAutoSchema):
+    status = EnumField(OrderStatus, by_value=True)
+    
     class Meta:
         model = Order
-        include_fk = True  
-        load_instance = True  
-    
+        include_fk = True  # Includes foreign keys
+        load_instance = True  # Allows deserialization to model instances

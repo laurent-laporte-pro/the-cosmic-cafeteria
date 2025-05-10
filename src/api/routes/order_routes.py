@@ -7,6 +7,7 @@ from api.models.Hero import Hero
 from api.models.Meal import Meal
 from api.schemas.order_schema import OrderSchema
 from sqlalchemy.exc import SQLAlchemyError
+from api.extensions import task_queue
 
 order_blueprint = Blueprint("order_blueprint", __name__, url_prefix="/orders")
 order_schema = OrderSchema()
@@ -29,32 +30,23 @@ def get_order(order_id):
     order = Order.query.get_or_404(order_id)
     return order_schema.jsonify(order)
 
+
+
+
 #--------CREATE A NEW ORDER --------#
 @order_blueprint.route('/', methods=['POST'])
 def create_order():
-    try:
-        data = request.get_json()
-        
-        if not all(field in data for field in ['hero_id', 'meal_id']):
-            return jsonify({"error": "Missing hero_id or meal_id"}), 400
-            
-        hero = Hero.query.get_or_404(data['hero_id'])
-        meal = Meal.query.get_or_404(data['meal_id'])
-        
-        order = Order(
-            hero=hero,
-            meal=meal,
-            message=data.get('message')
-        )
-        
-        db.session.add(order)
-        db.session.commit()
-        return order_schema.jsonify(order), 201
-    except ValueError as e:
-        return jsonify({"error": "Invalid order status"}), 400
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 400
+    data = request.get_json()
+    
+    # Validate and deserialize input
+    order = order_schema.load(data)
+    
+    db.session.add(order)
+    db.session.commit()
+    
+    task_queue.enqueue("worker.tasks.process_order" , order.id)
+    
+    return order_schema.jsonify(order), 202
 
 #--------UPDATE THE WHOLE ORDER --------#
 @order_blueprint.route('/<int:order_id>', methods=['PUT'])

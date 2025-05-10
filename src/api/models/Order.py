@@ -12,9 +12,9 @@ class Order(db.Model):
     hero_id = db.Column(db.Integer, db.ForeignKey('hero.id'), nullable=False)
     meal_id = db.Column(db.Integer, db.ForeignKey('meal.id'), nullable=False)
 
-    def __init__(self, hero, meal, status, message=None):
-        self.hero = hero
-        self.meal = meal
+    def __init__(self, hero_id, meal_id, status = OrderStatus.PENDING, message=None):
+        self.hero_id = hero_id
+        self.meal_id = meal_id
         self.status = status
         self.message = message
 

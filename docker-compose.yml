@@ -16,6 +16,7 @@ services:
       context: .
       dockerfile: docker/worker/Dockerfile
     environment:
+      - PYTHONPATH=/app/src
       - REDIS_URL=redis://tcc-redis:6379/0
       - DATABASE_URL=postgresql://user:password@tcc-db:5432/cosmic_cafeteria
     depends_on:
