@@ -5,3 +5,4 @@ The routes are base on Flask-RESTFul.
 """
 
 from .hero_routes import hero_blueprint
+from .meal_routes import meal_blueprint
