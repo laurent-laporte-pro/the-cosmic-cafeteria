@@ -2,6 +2,9 @@ from flask import Flask
 from api.config import Config
 from api.extensions import db, ma , redis_conn , task_queue , init_redis
 from flask_migrate import Migrate
+import logging
+
+
 
 def create_app():
     app = Flask(__name__)
@@ -21,6 +24,12 @@ def create_app():
         app.register_blueprint(order_blueprint)
         
         from api import models  # This ensures models are loaded
+    # Setup logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    )
+    app.logger.info("Flask app started.")
     return app
 
 app = create_app()
