@@ -21,7 +21,7 @@ To ensure clean architecture and maintainability:
 
 - All API routes were tested using **Postman**.
 - Unit and integration tests are written and organized in the `tests/` folder.
-- The tests are not complete, and i did not write them in the correct manner nor worked with them on this project (skill issue)
+
 ---
 
 ##  Environment
