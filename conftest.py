@@ -1,0 +1,150 @@
+# tests/conftest.py
+
+import pytest
+from app import create_app
+from api.app_extensions import db 
+from api.models import Hero,Meal,Order,OrderStatus
+from api.schemas import HeroSchema, MealSchema, OrderSchema
+
+
+@pytest.fixture(scope="session")
+def app():
+    """
+    app instance for testing.
+    """
+    app = create_app(env="testing")
+
+    # Establish application context
+    with app.app_context():
+        yield app
+
+
+@pytest.fixture
+def session(app):
+    with app.app_context():
+        db.create_all()
+        yield db.session
+        db.session.rollback()
+        db.drop_all()
+
+
+@pytest.fixture(scope="session")
+def client(app):
+    return app.test_client()
+
+### fixtures 
+
+@pytest.fixture
+def hero(session):
+    test_hero = Hero(name="Thor", planet="Asgard", allergies=["Iron"])
+    session.add(test_hero)
+    session.commit()
+    return test_hero
+
+@pytest.fixture
+def meal(session):
+    test_meal = Meal(
+        name="Starburger",
+        ingredients=["Beef", "Starsauce"],
+        price=12.99,
+        origin_planet="Mars",
+        description="interplanetary burger"
+    )
+    session.add(test_meal)
+    session.commit()
+    return test_meal
+
+
+@pytest.fixture
+def order(session, hero, meal):
+    test_order = Order(
+        hero_id=hero.id,
+        meal_id=meal.id,
+        status=OrderStatus.PENDING,
+        message="deliver"
+    )
+    session.add(test_order)
+    session.commit()
+    return test_order
+
+
+@pytest.fixture
+def hero_schema():
+    return HeroSchema()
+
+
+@pytest.fixture
+def meal_schema():
+    return MealSchema()
+
+
+@pytest.fixture
+def order_schema():
+    return OrderSchema()
+
+
+@pytest.fixture
+def example():
+    return {
+        "name": "Example Meal",
+        "ingredients": ["Ingredient1", "Ingredient2"],
+        "price": 15.50,
+        "origin_planet": "Earth",
+        "description": "An example meal for testing"
+    }
+
+
+@pytest.fixture
+def example_hero_payload():
+    return {
+        "name": "Example Hero",
+        "planet": "Earth",
+        "allergies": ["Dust"]
+    }
+
+
+
+@pytest.fixture
+def setup_data(session):
+    # Create a hero with allergies
+    hero = Hero(name="Thor", planet="Asgard", allergies=["Dust", "Iron"])
+    session.add(hero)
+    session.flush()  # Flush to assign id
+
+    # Create a meal with ingredients that conflict with hero allergies
+    meal_allergic = Meal(
+        name="Dusty Meal",
+        ingredients=["Dust", "Water"],
+        price=10.0,
+        origin_planet="Earth",
+        description="A dusty meal"
+    )
+    session.add(meal_allergic)
+    session.flush()
+
+    # Create a meal with no conflicting ingredients
+    meal_safe = Meal(
+        name="Safe Meal",
+        ingredients=["Water", "Salt"],
+        price=15.0,
+        origin_planet="Earth",
+        description="A safe meal"
+    )
+    session.add(meal_safe)
+    session.flush()
+
+    # Create orders
+    order_conflict = Order(hero_id=hero.id, meal_id=meal_allergic.id)
+    order_safe = Order(hero_id=hero.id, meal_id=meal_safe.id)
+
+    session.add_all([order_conflict, order_safe])
+    session.commit()
+
+    return {
+        "hero": hero,
+        "meal_allergic": meal_allergic,
+        "meal_safe": meal_safe,
+        "order_conflict": order_conflict,
+        "order_safe": order_safe,
+    }
+

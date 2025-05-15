@@ -1,5 +1,6 @@
-"""
-This module contains the database models for the Cosmic Cafeteria application.
+from .hero import Hero
+from .meal import Meal
+from .order import Order
+from .order import OrderStatus
 
-The model is based on SQLAlchemy.
-"""
+__all__ = ["Hero", "Meal", "Order"]
