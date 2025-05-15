@@ -25,6 +25,9 @@ def create_app(env: str | None = None) -> Flask:
     # Register blueprints
     register_blueprints(app)
 
+    # enable logging 
+    config.init_log_app(app)
+
     # Register core routes like health checks and error handlers
     _register_internal_routes(app)
 

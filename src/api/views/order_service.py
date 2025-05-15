@@ -4,11 +4,17 @@ from sqlalchemy import select
 from api.models import Order, Hero, Meal, OrderStatus
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def process_order_logic(db: Session, order_id: int) -> str:
-    print('-----------------**before*******------------')
+    logger.debug("order {order_id} start processing")
+
     order = db.get(Order, order_id)
-    print('-----------------*********------------')
     if not order:
+        logger.error("order {order_id} failed processing")
         raise ValueError("Order not found")
 
     hero = db.get(Hero, order.hero_id)
@@ -28,4 +34,5 @@ def process_order_logic(db: Session, order_id: int) -> str:
             order.message = "Success"
 
     db.commit()
+    logger.debug("order {order_id} finished processing")
     return order.status.name

@@ -2,6 +2,8 @@ import os
 import logging
 from pathlib import Path
 from typing import List, Optional
+import logging
+from logging.config import dictConfig
 
 basedir = Path(__file__).parent.parent.resolve()
 
@@ -38,6 +40,45 @@ class Config:
     WTF_CSRF_ENABLED: bool = True  # Enable by default
 
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
+    log_dir = 'logs'
+    os.makedirs(log_dir, exist_ok=True)
+
+    LOG_LEVEL = logging.INFO
+    LOG_FILE = 'logs/app.log'
+
+    @staticmethod
+    def init_log_app(app):
+        dictConfig({
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'default': {
+                    'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+                },
+            },
+            'handlers': {
+                'console': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'default',
+                    'level': Config.LOG_LEVEL,
+                },
+                'file': {
+                    'class': 'logging.handlers.RotatingFileHandler',
+                    'filename': Config.LOG_FILE,
+                    'maxBytes': 1_000_000,
+                    'backupCount': 5,
+                    'formatter': 'default',
+                    'level': Config.LOG_LEVEL,
+                },
+            },
+            'root': {
+                'level': Config.LOG_LEVEL,
+                'handlers': ['console', 'file']
+            },
+        })
+
+
 
 
 class DevelopmentConfig(Config):

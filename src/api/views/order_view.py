@@ -15,6 +15,9 @@ from jobs.queue import default_queue
 from worker.tasks import process_order_task
 
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 order_schema = OrderSchema()
 orders_schema = OrderSchema(many=True)
@@ -49,20 +52,28 @@ class OrderAPI(MethodView):
 
             try:
                 default_queue.enqueue(process_order_task, order.id)
+                logger.debug("order {order.id} is processing")
+
             except Exception as e:
+                logger.error("order {order.id} is failed in proceess")
                 return {"error": "Failed to enqueue order processing"}, 500
 
+            
+            logger.info("order {order.id} sucessefuly processed")
             return success_response(order_schema.dump(order), 201)
 
         except ValidationError as err:
+            logger.error("order {order.id} is failed in proceess")
             return error_response("Validation failed", 400, err.messages)
 
         except IntegrityError:
             db.session.rollback()
+            logger.error("order {order.id} is failed in proceess")
             return error_response("Invalid references", 409)
 
         except SQLAlchemyError:
             db.session.rollback()
+            logger.error("order {order.id} is failed in proceess")
             return error_response("Database error", 500)
 
     def delete(self, order_id: int) -> Response:
@@ -82,10 +93,11 @@ class OrderAPI(MethodView):
                 return error_response("Order cannot be canceled in its current state", 400)
             order.status = OrderStatus.CANCELLED
             db.session.commit()
+            logger.warning("order {order.id} canceled")
             return success_response("canceled", 200)
 
         elif action == "delete":
             db.session.delete(order)
             db.session.commit()
-            print('-*-*-*-*-*>here')
+            logger.warning("order {order.id} deleted")
             return success_response("deleted", 204)
