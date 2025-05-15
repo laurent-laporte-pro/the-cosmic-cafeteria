@@ -26,7 +26,27 @@ orders_schema = OrderSchema(many=True)
 class OrderAPI(MethodView):
     def get(self, order_id: int = None) -> Response:
         """
-        GET /orders/ or /orders/<order_id>
+        Get one order or list all orders
+        ---
+        tags:
+          - Orders
+        parameters:
+          - name: order_id
+            in: path
+            type: integer
+            required: false
+            description: ID of the order to fetch
+        responses:
+          200:
+            description: A single order or list of orders
+            schema:
+              oneOf:
+                - $ref: '#/api/orders'
+                - type: array
+                  items:
+                    $ref: '#/api/orders'
+          404:
+            description: Order not found
         """
         if order_id is None:
             orders = Order.query.all()
@@ -37,7 +57,29 @@ class OrderAPI(MethodView):
 
     def post(self) -> Response:
         """
-        POST /orders/
+        Create a new order
+        ---
+        tags:
+          - Orders
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              $ref: '#/api/orders'
+        responses:
+          201:
+            description: Order created and processing started
+            schema:
+              $ref: '#/api/orders'
+          400:
+            description: Validation error
+          409:
+            description: Invalid references
+          500:
+            description: Database or queue error
         """
         try:
             data: dict = request.get_json(force=True)
@@ -78,7 +120,31 @@ class OrderAPI(MethodView):
 
     def delete(self, order_id: int) -> Response:
         """
-        DELETE /orders/<order_id>
+        Cancel or delete an order
+        ---
+        tags:
+          - Orders
+        consumes:
+          - application/json
+        parameters:
+          - name: order_id
+            in: path
+            type: integer
+            required: true
+            description: ID of the order to delete or cancel
+          - in: body
+            name: body
+            schema:
+              $ref: '#/api/orders'
+        responses:
+          200:
+            description: Order canceled
+          204:
+            description: Order deleted
+          400:
+            description: Invalid action or state
+          404:
+            description: Order not found
         """
         try:
             data = OrderDeleteActionSchema().load(request.get_json(force=True) or {})

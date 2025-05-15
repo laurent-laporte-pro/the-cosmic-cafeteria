@@ -16,7 +16,27 @@ meals_schema = MealSchema(many=True)
 class MealAPI(MethodView):
     def get(self, meal_id: int = None) -> Response:
         """
-        GET /meals/ or /meals/<meal_id>
+        Get one meal by ID or list all meals
+        ---
+        tags:
+          - Meals
+        parameters:
+          - name: meal_id
+            in: path
+            type: integer
+            required: false
+            description: ID of the meal to fetch
+        responses:
+          200:
+            description: A single meal or list of meals
+            schema:
+              oneOf:
+                - $ref: '#/api/meals'
+                - type: array
+                  items:
+                    $ref: '#/api/meals'
+          404:
+            description: Meal not found
         """
         if meal_id is None:
             meals = Meal.query.all()
@@ -27,7 +47,29 @@ class MealAPI(MethodView):
 
     def post(self) -> Response:
         """
-        POST /meals/
+        Create a new meal
+        ---
+        tags:
+          - Meals
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              $ref: '#/api/meals'
+        responses:
+          201:
+            description: Meal created successfully
+            schema:
+              $ref: '#/api/meals'
+          400:
+            description: Validation error
+          409:
+            description: Duplicate or invalid reference error
+          500:
+            description: Database error
         """
         try:
             data: dict = request.get_json(force=True)
@@ -49,7 +91,34 @@ class MealAPI(MethodView):
 
     def put(self, meal_id: int) -> Response:
         """
-        PUT /meals/<meal_id>
+        Update an existing meal
+        ---
+        tags:
+          - Meals
+        consumes:
+          - application/json
+        parameters:
+          - name: meal_id
+            in: path
+            type: integer
+            required: true
+            description: ID of the meal to update
+          - in: body
+            name: body
+            required: true
+            schema:
+              $ref: '#/api/meals'
+        responses:
+          200:
+            description: Meal updated successfully
+            schema:
+              $ref: '#/api/meals'
+          400:
+            description: Validation error
+          404:
+            description: Meal not found
+          500:
+            description: Database error
         """
         meal = Meal.query.get_or_404(meal_id)
 
@@ -68,7 +137,23 @@ class MealAPI(MethodView):
 
     def delete(self, meal_id: int) -> Response:
         """
-        DELETE /meals/<meal_id>
+        Delete a meal by ID
+        ---
+        tags:
+          - Meals
+        parameters:
+          - name: meal_id
+            in: path
+            type: integer
+            required: true
+            description: ID of the meal to delete
+        responses:
+          204:
+            description: Meal deleted successfully (No Content)
+          404:
+            description: Meal not found
+          500:
+            description: Database error
         """
         meal = Meal.query.get_or_404(meal_id)
 

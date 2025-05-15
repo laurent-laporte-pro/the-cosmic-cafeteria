@@ -16,7 +16,27 @@ heroes_schema = HeroSchema(many=True)
 class HeroAPI(MethodView):
     def get(self, hero_id: int = None) -> Response:
         """
-        GET /heroes/ or /heroes/<hero_id>
+        Get one hero by ID or list all heroes
+        ---
+        tags:
+          - Heroes
+        parameters:
+          - name: hero_id
+            in: path
+            type: integer
+            required: false
+            description: ID of the hero to fetch
+        responses:
+          200:
+            description: A single hero or list of heroes
+            schema:
+              oneOf:
+                - $ref: '#/api/heros'
+                - type: array
+                  items:
+                    $ref: '#/api/heros'
+          404:
+            description: Hero not found
         """
         if hero_id is None:
             heroes = Hero.query.all()
@@ -27,7 +47,29 @@ class HeroAPI(MethodView):
 
     def post(self) -> Response:
         """
-        POST /heroes/
+        Create a new hero
+        ---
+        tags:
+          - Heroes
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              $ref: '#/api/heros'
+        responses:
+          201:
+            description: Hero created successfully
+            schema:
+              $ref: '#/api/heros'
+          400:
+            description: Validation error
+          409:
+            description: Duplicate or invalid reference error
+          500:
+            description: Database error
         """
         try:
             data: dict = request.get_json(force=True)
@@ -49,7 +91,34 @@ class HeroAPI(MethodView):
 
     def put(self, hero_id: int) -> Response:
         """
-        PUT /heroes/<hero_id>
+        Update an existing hero
+        ---
+        tags:
+          - Heroes
+        consumes:
+          - application/json
+        parameters:
+          - name: hero_id
+            in: path
+            type: integer
+            required: true
+            description: ID of the hero to update
+          - in: body
+            name: body
+            required: true
+            schema:
+              $ref: '#/api/heros'
+        responses:
+          200:
+            description: Hero updated successfully
+            schema:
+              $ref: '#/api/heros'
+          400:
+            description: Validation error
+          404:
+            description: Hero not found
+          500:
+            description: Database error
         """
         hero = Hero.query.get_or_404(hero_id)
 
@@ -68,7 +137,23 @@ class HeroAPI(MethodView):
 
     def delete(self, hero_id: int) -> Response:
         """
-        DELETE /heroes/<hero_id>
+        Delete a hero by ID
+        ---
+        tags:
+          - Heroes
+        parameters:
+          - name: hero_id
+            in: path
+            type: integer
+            required: true
+            description: ID of the hero to delete
+        responses:
+          204:
+            description: Hero deleted successfully (No Content)
+          404:
+            description: Hero not found
+          500:
+            description: Database error
         """
         hero = Hero.query.get_or_404(hero_id)
 

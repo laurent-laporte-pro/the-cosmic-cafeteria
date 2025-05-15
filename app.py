@@ -5,6 +5,7 @@ from api.app_extensions import db
 from api.routes.hero_route import hero_bp
 from api.routes.meal_route import meal_bp
 from api.routes.order_route import order_bp
+from flasgger import Swagger
 
 
 def create_app(env: str | None = None) -> Flask:
@@ -31,6 +32,8 @@ def create_app(env: str | None = None) -> Flask:
     # Register core routes like health checks and error handlers
     _register_internal_routes(app)
 
+    add_swager(app)
+
     return app
 
 
@@ -39,6 +42,34 @@ def _init_extensions(app: Flask) -> None:
     Initialize Flask extensions 'SQLAlchemy' 
     """
     db.init_app(app)
+
+def add_swager(app: Flask) -> None: 
+
+
+    swagger_config = {
+    "headers": [],
+    "specs": [
+        {
+            "endpoint": 'apispec_1',
+            "route": '/apispec_1.json',
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+        "static_url_path": "/flasgger_static",
+        "swagger_ui": True,
+        "specs_route": "/apidocs/"
+    }
+
+    swagger_template = {
+        "swagger": "2.0",
+        "info": {
+            "title": "My Flask API",
+            "description": "API for adding two numbers",
+            "version": "1.0.0"
+        },
+    }
+    swagger = Swagger(app, config=swagger_config, template=swagger_template)
   
 
 
