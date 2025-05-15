@@ -28,6 +28,10 @@ def session(app):
         db.drop_all()
 
 
+@pytest.fixture(scope="session")
+def client(app):
+    return app.test_client()
+
 ### fixtures 
 
 @pytest.fixture
@@ -77,3 +81,23 @@ def meal_schema():
 @pytest.fixture
 def order_schema():
     return OrderSchema()
+
+
+@pytest.fixture
+def example():
+    return {
+        "name": "Example Meal",
+        "ingredients": ["Ingredient1", "Ingredient2"],
+        "price": 15.50,
+        "origin_planet": "Earth",
+        "description": "An example meal for testing"
+    }
+
+
+@pytest.fixture
+def example_hero_payload():
+    return {
+        "name": "Example Hero",
+        "planet": "Earth",
+        "allergies": ["Dust"]
+    }

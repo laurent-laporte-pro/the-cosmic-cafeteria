@@ -2,6 +2,8 @@ from flask import Flask, jsonify
 
 from config import get_config
 from api.app_extensions import db
+from api.routes.hero_route import hero_bp
+from api.routes.meal_route import meal_bp
 
 
 def create_app(env: str | None = None) -> Flask:
@@ -18,6 +20,9 @@ def create_app(env: str | None = None) -> Flask:
 
     # Initialize core extensions
     _init_extensions(app)
+
+    # Register blueprints
+    register_blueprints(app)
 
     # Register core routes like health checks and error handlers
     _register_internal_routes(app)
@@ -42,3 +47,7 @@ def _register_internal_routes(app: Flask) -> None:
     def health_check():
         return jsonify(status="ok", environment=app.config.get("ENV")), 200
 
+
+def register_blueprints(app: Flask) -> None:
+    app.register_blueprint(hero_bp, url_prefix="/api")
+    app.register_blueprint(meal_bp, url_prefix="/api")
