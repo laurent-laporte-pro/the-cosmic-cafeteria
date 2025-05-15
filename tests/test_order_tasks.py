@@ -3,6 +3,8 @@ from unittest.mock import patch, MagicMock
 from worker.tasks import process_order_task
 
 
+#those are integration test it neeeds redis installed in local
+
 @pytest.mark.parametrize("sleep_time", [1, 2, 3, 4, 5])
 @patch("worker.tasks.time.sleep", autospec=True)
 @patch("worker.tasks.process_order_logic", autospec=True)

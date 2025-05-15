@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 
 from api.views.order_service import process_order_logic
 from config import Config
+from api.models import Order, Hero, Meal, OrderStatus
+
 
 logger = logging.getLogger(__name__)
 

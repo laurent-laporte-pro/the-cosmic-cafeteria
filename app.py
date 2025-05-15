@@ -4,6 +4,7 @@ from config import get_config
 from api.app_extensions import db
 from api.routes.hero_route import hero_bp
 from api.routes.meal_route import meal_bp
+from api.routes.order_route import order_bp
 
 
 def create_app(env: str | None = None) -> Flask:
@@ -51,3 +52,4 @@ def _register_internal_routes(app: Flask) -> None:
 def register_blueprints(app: Flask) -> None:
     app.register_blueprint(hero_bp, url_prefix="/api")
     app.register_blueprint(meal_bp, url_prefix="/api")
+    app.register_blueprint(order_bp, url_prefix="/api")

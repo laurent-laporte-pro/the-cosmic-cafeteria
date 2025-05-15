@@ -37,6 +37,8 @@ class Config:
 
     WTF_CSRF_ENABLED: bool = True  # Enable by default
 
+    REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+
 
 class DevelopmentConfig(Config):
     DEBUG: bool = True

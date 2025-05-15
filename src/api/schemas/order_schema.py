@@ -9,8 +9,9 @@ class OrderSchema(SQLAlchemyAutoSchema):
         model = Order
         load_instance = True
         sqla_session = db.session
+        include_fk = True
 
-    status = fields.Field(dump_only=True)  # status always pending on create that's why is read only
+    status = fields.Method("get_status", dump_only=True) # thee field should be read only 
     message = fields.Str(
         required=False,
         allow_none=True,
@@ -20,3 +21,6 @@ class OrderSchema(SQLAlchemyAutoSchema):
     completed_time = fields.DateTime(allow_none=True)
     hero_id = fields.Int(required=True)
     meal_id = fields.Int(required=True)
+
+    def get_status(self, obj):
+        return obj.status.name 
