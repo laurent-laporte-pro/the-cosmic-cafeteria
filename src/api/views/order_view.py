@@ -9,7 +9,7 @@ from api.app_extensions import db
 from api.models.order import Order, OrderStatus
 from api.models.hero import Hero
 from api.models.meal import Meal
-from api.schemas.order_schema import OrderSchema
+from api.schemas.order_schema import OrderSchema, OrderDeleteActionSchema
 from api.views.utils import success_response, error_response
 from jobs.queue import default_queue
 from worker.tasks import process_order_task
@@ -69,11 +69,23 @@ class OrderAPI(MethodView):
         """
         DELETE /orders/<order_id>
         """
-        order = Order.query.get_or_404(order_id)
         try:
+            data = OrderDeleteActionSchema().load(request.get_json(force=True) or {})
+        except ValidationError as err:
+            return error_response(err.messages, 400)
+
+        action = data["action"]
+        order = Order.query.get_or_404(order_id)
+
+        if action == "cancel":
+            if order.status in {OrderStatus.COMPLETED, OrderStatus.CANCELLED}:
+                return error_response("Order cannot be canceled in its current state", 400)
+            order.status = OrderStatus.CANCELLED
+            db.session.commit()
+            return success_response("canceled", 200)
+
+        elif action == "delete":
             db.session.delete(order)
             db.session.commit()
-            return success_response(f"Order #{order.id} deleted", 204)
-        except SQLAlchemyError:
-            db.session.rollback()
-            return error_response("Database error", 500)
+            print('-*-*-*-*-*>here')
+            return success_response("deleted", 204)

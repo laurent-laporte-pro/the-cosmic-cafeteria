@@ -59,3 +59,54 @@ def test_create_order_invalid(client):
     data = response.get_json()
     assert "hero_id" in data["errors"]
 
+
+
+# test cancel functionality
+def test_cancel_order(client, order, session):
+    """Test canceling an order via DELETE /orders/<id>"""
+    response = client.delete(
+        f"api/orders/{order.id}",
+        json={"action": "cancel"},
+        follow_redirects=True
+    )
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "canceled" in data["data"]
+
+    # Verify DB state
+    updated_order = session.get(Order, order.id)
+    assert updated_order.status == OrderStatus.CANCELLED
+
+
+def test_delete_order(client, order, session):
+    """Test deleting an order via DELETE /orders/<id>"""
+    response = client.delete(
+        f"api/orders/{order.id}",
+        json={"action": "delete"},
+        follow_redirects=True
+    )
+    assert response.status_code == 204
+
+    # Verify it's deleted
+    deleted = session.get(Order, order.id)
+    assert deleted is None
+
+
+def test_invalid_action(client, order):
+    """Test invalid action"""
+    response = client.delete(
+        f"api/orders/{order.id}",
+        json={"action": "invalid"},
+    )
+    assert response.status_code == 400
+
+
+def test_missing_action(client, order):
+    """Test missing action key in payload"""
+    response = client.delete(
+        f"api/orders/{order.id}",
+        json={},  # no 'action'
+    )
+    assert response.status_code == 400
+
+

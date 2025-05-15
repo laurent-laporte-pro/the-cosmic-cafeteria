@@ -1,5 +1,5 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
-from marshmallow import fields, validate
+from marshmallow import fields, validate, Schema
 from api.models.order import Order
 from api.app_extensions import db
 from api.models.order import OrderStatus
@@ -24,3 +24,18 @@ class OrderSchema(SQLAlchemyAutoSchema):
 
     def get_status(self, obj):
         return obj.status.name 
+
+
+class OrderDeleteActionSchema(Schema):
+    """
+    Schema to validate the action type when deleting an order.
+    """
+
+    action = fields.Str(
+        required=True,
+        validate=validate.OneOf(["cancel", "delete"]),
+        error_messages={
+            "required": "Action is required.",
+            "validator_failed": "Action must be 'cancel' or 'delete'."
+        }
+    )
