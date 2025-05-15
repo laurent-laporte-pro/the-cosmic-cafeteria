@@ -4,6 +4,7 @@ import pytest
 from app import create_app
 from api.app_extensions import db 
 from api.models import Hero,Meal,Order,OrderStatus
+from api.schemas import HeroSchema, MealSchema, OrderSchema
 
 
 @pytest.fixture(scope="session")
@@ -61,3 +62,18 @@ def order(session, hero, meal):
     session.add(test_order)
     session.commit()
     return test_order
+
+
+@pytest.fixture
+def hero_schema():
+    return HeroSchema()
+
+
+@pytest.fixture
+def meal_schema():
+    return MealSchema()
+
+
+@pytest.fixture
+def order_schema():
+    return OrderSchema()
